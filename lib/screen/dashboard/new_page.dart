@@ -44,9 +44,9 @@ class _NewsPageState extends State<NewsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('News Page'),
-      // ),
+      appBar: AppBar(
+        title: const Text('News Page'),
+      ),
       body: WebViewWidget(controller: controller),
     );
   }
