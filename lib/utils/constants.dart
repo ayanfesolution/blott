@@ -1,6 +1,7 @@
 import 'package:blott/utils/app_colors.dart';
 import 'package:blott/utils/dimension.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 const kFirstLaunch = 'first_launch';
 
@@ -34,4 +35,14 @@ Widget xMargin(double size) {
   return SizedBox(
     width: getScreenWidth(size),
   );
+}
+
+String convertTimestamp(int timestamp) {
+  // Convert the Unix timestamp to a DateTime object
+  DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+
+  // Define the format for the output date
+  String formattedDate = DateFormat('d MMM y').format(date);
+
+  return formattedDate;
 }

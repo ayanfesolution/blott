@@ -96,6 +96,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 key: kLastName,
                 data: lastName.text,
               );
+              injector.localStorage.storeString(
+                key: kFirstLaunch,
+                data: 'Done',
+              );
               RouteNavigators.route(
                 context,
                 const SignUpComplete(),

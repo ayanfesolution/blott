@@ -1,4 +1,5 @@
 import 'package:blott/utils/constants.dart';
+import 'package:blott/utils/injector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -7,13 +8,11 @@ class Config {
 }
 
 Future<bool> checkIfIsFirstLaunch() async {
-  final prefs = await SharedPreferences.getInstance();
-
-  String? token = prefs.getString(kFirstLaunch);
+  String token = await injector.localStorage.returnString(key: kFirstLaunch);
   if (kDebugMode) {
     print(token);
   }
-  if (token == null) {
+  if (token.isEmpty) {
     return true;
   } else {
     return false;
