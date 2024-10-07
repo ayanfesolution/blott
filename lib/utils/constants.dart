@@ -1,6 +1,7 @@
 import 'package:blott/utils/app_colors.dart';
 import 'package:blott/utils/dimension.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 const kFirstLaunch = 'first_launch';
@@ -45,4 +46,17 @@ String convertTimestamp(int timestamp) {
   String formattedDate = DateFormat('d MMM y').format(date);
 
   return formattedDate;
+}
+
+
+kToastMsgPopUp(String msg) {
+  Fluttertoast.showToast(
+    msg: msg,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.TOP,
+    timeInSecForIosWeb: 1,
+    backgroundColor: kPRYCOLOUR,
+    textColor: Colors.white,
+    fontSize: getScreenHeight(16),
+  );
 }

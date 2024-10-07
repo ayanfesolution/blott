@@ -1,3 +1,5 @@
+import 'package:blott/model/new_response_model.dart';
+import 'package:blott/provider/news_provider.dart';
 import 'package:blott/utils/constants.dart';
 import 'package:blott/utils/dimension.dart';
 import 'package:blott/utils/injector.dart';
@@ -31,10 +33,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     setState(() {
       firstName = yourFirstName;
     });
+    ref.read(newsProvider.notifier).getTheListOfAvailableNews();
   }
 
   @override
   Widget build(BuildContext context) {
+    List<NewsResponseModel> newsList = ref.watch(newsProvider);
     return Scaffold(
       backgroundColor: Colors.black,
       body: Padding(
@@ -57,9 +61,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.zero,
-                itemCount: 25,
+                itemCount: newsList.length,
                 itemBuilder: (context, index) {
-                  return const SingleNewWidget();
+                  return SingleNewWidget(
+                    newsResponseModel: newsList[index],
+                  );
                 },
               ),
             ),
@@ -73,7 +79,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 class SingleNewWidget extends StatelessWidget {
   const SingleNewWidget({
     super.key,
+    required this.newsResponseModel,
   });
+  final NewsResponseModel newsResponseModel;
 
   @override
   Widget build(BuildContext context) {
