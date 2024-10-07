@@ -1,8 +1,10 @@
 import 'package:blott/model/new_response_model.dart';
 import 'package:blott/provider/news_provider.dart';
+import 'package:blott/screen/dashboard/new_page.dart';
 import 'package:blott/utils/constants.dart';
 import 'package:blott/utils/dimension.dart';
 import 'package:blott/utils/injector.dart';
+import 'package:blott/utils/navigation.dart';
 import 'package:blott/utils/padded.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -121,7 +123,12 @@ class SingleNewWidget extends StatelessWidget {
         vertical: getScreenHeight(16),
       ),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          RouteNavigators.route(
+            context,
+            NewsPage(pageUrl: newsResponseModel.url ?? ''),
+          );
+        },
         child: Row(
           children: [
             SizedBox(
