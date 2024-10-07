@@ -19,7 +19,7 @@ TextStyle kTextStyleCustom({
   FontWeight fontWeight = FontWeight.w400,
 }) {
   return TextStyle(
-    fontSize: getScreenHeight(fontSize),
+    fontSize: getScreenWidth(fontSize),
     fontWeight: fontWeight,
     fontStyle: fontStyle,
     color: color,
@@ -47,7 +47,6 @@ String convertTimestamp(int timestamp) {
 
   return formattedDate;
 }
-
 
 kToastMsgPopUp(String msg) {
   Fluttertoast.showToast(

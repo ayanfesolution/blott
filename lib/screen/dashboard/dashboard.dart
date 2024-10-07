@@ -68,7 +68,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              yMargin(66),
+              yMargin(50),
               Text(
                 'Hey $firstName',
                 style: GoogleFonts.raleway(
