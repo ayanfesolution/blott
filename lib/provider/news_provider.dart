@@ -15,8 +15,13 @@ class NewsProvider extends StateNotifier<List<NewsResponseModel>> {
 
   NewsDataSource newsDataSource = NewsDataSource();
 
-  getTheListOfAvailableNews() async {
-    List<NewsResponseModel> result = await newsDataSource.getAllTheNews();
-    state = result;
+  Future<bool> getTheListOfAvailableNews() async {
+    List<NewsResponseModel>? result = await newsDataSource.getAllTheNews();
+    if (result != null) {
+      state = result;
+      return true;
+    } else {
+      return false;
+    }
   }
 }

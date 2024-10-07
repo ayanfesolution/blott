@@ -7,7 +7,7 @@ import 'package:blott/utils/injector.dart';
 class NewsDataSource {
   final ApiClient client = injector.apiClient;
 
-  Future<List<NewsResponseModel>> getAllTheNews() async {
+  Future<List<NewsResponseModel>?> getAllTheNews() async {
     try {
 
       //client.header = {'Accept': 'application/json'};
@@ -17,7 +17,7 @@ class NewsDataSource {
       return output;
     } catch (e) {
       kToastMsgPopUp(NetworkExceptions.getDioException(e));
-      return [];
+      return null;
     }
   }
 }

@@ -19,6 +19,8 @@ class DashboardScreen extends StatefulHookConsumerWidget {
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   String firstName = '';
+  bool networkFailed = false;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -32,8 +34,21 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         await injector.localStorage.returnString(key: kFirstName);
     setState(() {
       firstName = yourFirstName;
+      isLoading = ref.read(newsProvider).isEmpty;
     });
-    ref.read(newsProvider.notifier).getTheListOfAvailableNews();
+
+    bool result =
+        await ref.read(newsProvider.notifier).getTheListOfAvailableNews();
+
+    if (!result) {
+      setState(() {
+        networkFailed = true;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -41,35 +56,51 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     List<NewsResponseModel> newsList = ref.watch(newsProvider);
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: getScreenWidth(16),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            yMargin(66),
-            Text(
-              'Hey $firstName',
-              style: GoogleFonts.raleway(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-                fontSize: getScreenWidth(32),
+      body: RefreshIndicator(
+        onRefresh: () =>
+            ref.read(newsProvider.notifier).getTheListOfAvailableNews(),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: getScreenWidth(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              yMargin(66),
+              Text(
+                'Hey $firstName',
+                style: GoogleFonts.raleway(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: getScreenWidth(32),
+                ),
               ),
-            ),
-            yMargin(22),
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: newsList.length,
-                itemBuilder: (context, index) {
-                  return SingleNewWidget(
-                    newsResponseModel: newsList[index],
-                  );
-                },
-              ),
-            ),
-          ],
+              yMargin(22),
+              networkFailed
+                  ? Text(
+                      'Something went wrong. Please try again later.',
+                      style: kTextStyleCustom(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Expanded(
+                      child: isLoading
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : ListView.builder(
+                              padding: EdgeInsets.zero,
+                              itemCount: newsList.length,
+                              itemBuilder: (context, index) {
+                                return SingleNewWidget(
+                                  newsResponseModel: newsList[index],
+                                );
+                              },
+                            ),
+                    ),
+            ],
+          ),
         ),
       ),
     );
@@ -89,67 +120,69 @@ class SingleNewWidget extends StatelessWidget {
       padding: EdgeInsets.symmetric(
         vertical: getScreenHeight(16),
       ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: getScreenWidth(100),
-            height: getScreenHeight(100),
-            child: CachedNetworkImage(
-              imageUrl:
-                  'https://static2.finnhub.io/file/publicdatany/finnhubimage/market_watch_logo.png', // Replace with your image URL
-              placeholder: (context, url) =>
-                  const CircularProgressIndicator(), // Shows while loading
-              errorWidget: (context, url, error) =>
-                  const Icon(Icons.error), // Shows on error
-              fit: BoxFit.cover, // Adjust image fit
+      child: InkWell(
+        onTap: () {},
+        child: Row(
+          children: [
+            SizedBox(
+              width: getScreenWidth(100),
+              height: getScreenHeight(100),
+              child: CachedNetworkImage(
+                imageUrl: newsResponseModel.image ?? '',
+                placeholder: (context, url) =>
+                    const CircularProgressIndicator(), // Shows while loading
+                errorWidget: (context, url, error) =>
+                    const Icon(Icons.error), // Shows on error
+                fit: BoxFit.contain, // Adjust image fit
+              ),
             ),
-          ),
-          xMargin(
-            16,
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'The Economic Times',
-                        style: GoogleFonts.rubik(
-                          fontWeight: FontWeight.w400,
-                          fontSize: getScreenWidth(12),
-                          color: Colors.white,
+            xMargin(
+              16,
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          newsResponseModel.source ?? '',
+                          style: GoogleFonts.rubik(
+                            fontWeight: FontWeight.w400,
+                            fontSize: getScreenWidth(12),
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
-                    xMargin(10),
-                    SizedBox(
-                      width: getScreenWidth(80),
-                      child: Text(
-                        convertTimestamp(24887689000),
-                        style: GoogleFonts.rubik(
-                          fontWeight: FontWeight.w400,
-                          fontSize: getScreenWidth(12),
-                          color: Colors.white,
+                      xMargin(10),
+                      SizedBox(
+                        width: getScreenWidth(80),
+                        child: Text(
+                          convertTimestamp(newsResponseModel.datetime ?? 0),
+                          style: GoogleFonts.rubik(
+                            fontWeight: FontWeight.w400,
+                            fontSize: getScreenWidth(12),
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                yMargin(8),
-                Text(
-                  'Markets FTSE slides almost 2pc as sterling sinks to \$1.38',
-                  style: kTextStyleCustom(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
+                    ],
                   ),
-                )
-              ],
-            ),
-          )
-        ],
+                  yMargin(8),
+                  Text(
+                    newsResponseModel.headline ?? '',
+                    style: kTextStyleCustom(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
