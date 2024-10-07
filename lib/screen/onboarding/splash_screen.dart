@@ -3,10 +3,14 @@ import 'dart:async';
 import 'package:blott/api/config.dart';
 import 'package:blott/screen/dashboard/dashboard.dart';
 import 'package:blott/screen/onboarding/sign_up.dart';
+import 'package:blott/utils/constants.dart';
 import 'package:blott/utils/dimension.dart';
+import 'package:blott/utils/injector.dart';
 import 'package:blott/utils/navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+
+import 'signup_complete.dart';
 
 class SplashScreen extends StatefulHookWidget {
   const SplashScreen({super.key});
@@ -27,6 +31,10 @@ class _SplashScreenState extends State<SplashScreen>
   void screeenToDisplay() async {
     bool result = await checkIfIsFirstLaunch();
 
+    String notificationStatusData = await injector.localStorage.returnString(
+      key: kNotificationStatus,
+    );
+
     if (result == true) {
       if (context.mounted) {
         RouteNavigators.routeReplace(
@@ -35,10 +43,17 @@ class _SplashScreenState extends State<SplashScreen>
         );
       }
     } else {
-      RouteNavigators.routeReplace(
-        context,
-        const DashboardScreen(),
-      );
+      if (notificationStatusData == 'allowed') {
+        RouteNavigators.routeReplace(
+          context,
+          const DashboardScreen(),
+        );
+      } else {
+        RouteNavigators.routeReplace(
+          context,
+          const SignUpComplete(),
+        );
+      }
     }
   }
 

@@ -19,39 +19,3 @@ Future<bool> checkIfIsFirstLaunch() async {
     return false;
   }
 }
-
-Future<String?> returnEmail() async {
-  final prefs = await SharedPreferences.getInstance();
-
-  String? email = prefs.getString(kUserEmail);
-
-  if (email == null) {
-    return email;
-  } else {
-    return null;
-  }
-}
-
-Future<String?> returnPassword() async {
-  final prefs = await SharedPreferences.getInstance();
-
-  String? password = prefs.getString(kUserPassword);
-
-  if (password == null) {
-    return password;
-  } else {
-    return null;
-  }
-}
-
-writeUserEmail(String email) async {
-  final prefs = await SharedPreferences.getInstance();
-
-  prefs.setString(kUserPassword, email);
-}
-
-writeUserPassword(String password) async {
-  final prefs = await SharedPreferences.getInstance();
-
-  prefs.setString(kUserPassword, password);
-}
